@@ -120,7 +120,7 @@ saveButton.addEventListener('click', async () => {
                 popup.style.display = 'none';
             }, 1000);
         } else {
-            console.error('Fehler beim Löschen der Aufgabe', response.status);
+            console.error('Fehler beim Speichern der Aufgabe', response.status);
         }
     } catch (error) {
         console.error('Fehler beim Senden der Anfrage', error);

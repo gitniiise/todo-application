@@ -309,12 +309,22 @@ async function generateEventListenerSaveSubTodo() {
         }
         const subtodoObjectUpdate = JSON.stringify({ updateName, updateDescription, updatePrio, updateDeadline });
         try {
-            const response = await fetch(`/api/subtodos/${subtodoId}`, {
-                method: 'POST',
+            const response = await fetch(`/api/subtodos/update/${subtodoId}`, {
+                method: 'PUT',
                 body: subtodoObjectUpdate,
             });
+            if (response.status === 200) {
+                // Popup schließen, Seite neuladen
+                location.reload();
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                }, 1000);
+            } else {
+                console.error('Fehler beim Speichern der Unteraufgabe', response.status);
+            }
         } catch (error) {
             console.error('Fehler beim Senden der Anfrage - Unteraufgabe', error.message);
+            console.log(error);
         }
     });
 }

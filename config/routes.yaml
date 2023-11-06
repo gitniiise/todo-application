@@ -39,9 +39,9 @@ add_subtodo:
     controller: App\Controller\SubToDoController::addSubToDo
     methods: POST
 update_subtodo:
-    path: /api/subtodos/{id}
+    path: /api/subtodos/update/{id}
     controller: App\Controller\SubToDoController::updateSubTodo
-    methods: POST
+    methods: PUT
 delete_subtodo:
     path: /api/subtodos/{id}
     controller: App\Controller\SubToDoController::deleteSubTodo

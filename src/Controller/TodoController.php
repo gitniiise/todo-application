@@ -145,7 +145,6 @@ class TodoController extends AbstractController
         }
 
         $requestData = json_decode($request->getContent(), true);
-
         // Die aktualisierten Daten aus $requestData verwenden, um die Aufgabe zu aktualisieren
         $todo->setName($requestData['updateName']);
         $todo->setDescription($requestData['updateDescription']);

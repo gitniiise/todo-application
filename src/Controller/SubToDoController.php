@@ -170,7 +170,7 @@ class SubToDoController extends AbstractController implements ServiceSubscriberI
     /**
      * Aktualisiert eine Unteraufgabe anhand ihrer ID und Benutzereingaben.
      *
-     * @Route("/api/subtodos/{id}", name="api_subtodo_update", methods={"POST"})
+     * @Route("/api/subtodos/update/{id}", name="api_subtodo_update", methods={"PUT"})
      *
      * @param int $id Die ID der Unteraufgabe, die aktualisiert werden soll.
      * @param Request $request Der Symfony-Request mit den Benutzereingaben.
