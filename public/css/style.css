@@ -1,0 +1,200 @@
+input#new_todo, input#todo-item-name-input, textarea, input#new_subtodo, input#subtodo-item-name-input {
+    width: -webkit-fill-available;
+    max-width: 95%;
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgb(0 0 0 / 24%);
+    font-size: 16px;
+}
+
+input#todo-item-name-input {
+    background-color: unset;
+    border: none;
+    box-shadow: none;
+    font-weight: bold;
+    padding-left: 0;
+}
+
+.form-group {
+    margin: 0.5rem;
+}
+
+.form-group.small-group{
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+
+input.todo-checkbox, input.subtodo-checkbox, .form-group.small-group label {
+    margin-right: 10px;
+}
+/* CSS-Regel, um die Animation zu definieren */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* CSS-Regel, um die Animation auf ein Element anzuwenden */
+.fade-out {
+    animation: fadeOut 1s ease-in-out; /* 1s = Dauer der Animation in Sekunden */
+}
+
+body {
+    width: 500px;
+    margin: 3rem auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: system-ui;
+    font-size: 14px;
+}
+
+h1, h2, input#todo-item-name-input {
+    font-family: Source Serif Pro,serif;
+    letter-spacing: 1.5px;
+    font-size: 24px;
+    margin: 0.5rem 0;
+}
+
+label {
+    display: flex;
+    align-content: center;
+    font-size: larger;
+}
+
+.green-bg {
+    background-color: #E2EBE4;
+}
+
+section {
+    padding: 1rem 2rem;
+}
+
+button {
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgb(0 0 0 / 31%);
+    transition: background-color 0.3s;
+    height: 40;
+    margin-left: 1rem;
+} 
+
+button:hover {
+    background-color: #6ba07587;
+}
+
+form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#popup form#update-form {
+    display: flex;
+    flex-direction: column;
+    align-items: unset;
+    border-radius: 5px;
+}
+
+svg {
+    width: 20px;
+    height: auto;
+    margin-right: 0.5rem;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+li:hover {
+    background-color: #f5f5f5;
+}
+
+div form {
+    margin-bottom: 30px;
+}
+
+#popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+}
+
+#todo-item-details {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 3rem 3rem 2rem 3rem;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 500px;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.close-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    margin: 1rem;
+}
+
+button#save-button, button#save-button-subtodo {
+    margin: 2rem 0;
+}
+
+span.prio-icon svg {
+    width: 5px;
+    height: 15px;
+    margin: 0;
+}
+
+span.deadline-info {
+    font-size: x-small;
+    float: inline-end;
+    margin-top: 5px;
+    color: green;
+}
+
+button#sort-deadline, button#sort-prio, section.green-bg.auto-pad, section.green-bg.auto-pad div {
+    display: flex;
+}
+section.green-bg.auto-pad div {
+    margin-left: auto;
+}
+
+button#sort-deadline, button#sort-prio {
+    padding: 10px;
+}
+
+form#update-form {
+    padding: 1rem 1rem 0 1rem;
+    font-size: small;
+}

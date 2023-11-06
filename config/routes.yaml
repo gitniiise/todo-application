@@ -3,3 +3,30 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+index:
+    path: /
+    controller: App\Controller\TodoController::todos
+delete_todo:
+    path: /api/todos/{id}
+    controller: App\Controller\TodoController::deleteTodo
+    methods: [DELETE, POST]
+get_todo:
+    path: /api/todos/{id}
+    controller: App\Controller\TodoController::getTodo
+    methods: GET
+update_todo:
+    path: /api/todos/{id}
+    controller: App\Controller\TodoController::updateTodo
+    methods: PUT
+get_subtodos:
+    path: /api/subtodos/{parentTodoId}
+    controller: App\Controller\SubToDoController::getsubtodos
+    methods: GET
+update_subtodo:
+    path: /api/subtodos/{id}
+    controller: App\Controller\SubToDoController::updateSubTodo
+    methods: PUT
+delete_subtodo:
+    path: /api/subtodos/{id}
+    controller: App\Controller\SubToDoController::deleteSubTodo
+    methods: [DELETE, POST]
