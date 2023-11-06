@@ -14,6 +14,14 @@ get_todo:
     path: /api/todos/{id}
     controller: App\Controller\TodoController::getTodo
     methods: GET
+add_todo:
+    path: /add_todo
+    controller: App\Controller\TodoController::addTodo
+    methods: POST
+api_todo_list:
+    path: /api/todos
+    controller: App\Controller\TodoController::getTodos
+    methods: GET
 update_todo:
     path: /api/todos/{id}
     controller: App\Controller\TodoController::updateTodo
@@ -26,6 +34,10 @@ get_subtodos:
     path: /api/subtodos/{parentTodoId}
     controller: App\Controller\SubToDoController::getSubToDos
     methods: GET
+add_subtodo:
+    path: /add_subtodo
+    controller: App\Controller\SubToDoController::addSubToDo
+    methods: POST
 update_subtodo:
     path: /api/subtodos/{id}
     controller: App\Controller\SubToDoController::updateSubTodo

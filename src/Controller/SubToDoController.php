@@ -136,7 +136,6 @@ class SubToDoController extends AbstractController implements ServiceSubscriberI
                 'deadline' => $subToDo->getDeadline(),
             ];
         }
-
         return new JsonResponse($subToDoArray);
     }
 

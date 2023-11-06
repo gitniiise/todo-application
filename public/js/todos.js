@@ -1,6 +1,5 @@
 import { showSubToDos } from './subtodos.js';
 
-// Übergeordnetes Element (Aufgabenliste), an das die Event-Listener gebunden werden
 const todoListContainer = document.getElementById('todo-list');
 const todoItems = document.querySelectorAll('.todo-item');
 const todoDetails = document.getElementById('todo-item-details');
@@ -11,21 +10,30 @@ const todoPriority = document.getElementById('todo-item-priority-input');
 const todoDeadline = document.getElementById('todo-item-deadline-input');
 
 const popup = document.getElementById('popup');
-// Event-Listener für das Klicken auf Aufgaben und Checkboxes (Event Delegation)
+
+/**
+ * Event-Listener für das Klicken auf Aufgaben und Checkboxes (Event Delegation).
+ *
+ * Diese Funktion erstellt einen Event-Listener, um auf Klickereignisse in der Aufgabenliste und bei den Checkboxen zu reagieren.
+ * Sie führt entsprechende Aktionen aus, wie das Löschen von Aufgaben oder das Anzeigen von Aufgabendetails und Unteraufgaben.
+ *
+ * @param {Event} event Das Klickereignis, das ausgelöst wurde.
+ */
 todoListContainer.addEventListener('click', async (event) => {
   const target = event.target;
   
   if (target.classList.contains('todo-checkbox')) {
     // Checkbox wurde geklickt
     if (target.checked) {
-      event.stopPropagation();
-      const todoId = target.parentElement.dataset.id;
+        event.stopPropagation();
+        const todoId = target.parentElement.dataset.id;
 
-      fetch(`/api/todos/${todoId}`, {
-        method: 'POST',
-      })
+        fetch(`/api/todos/${todoId}`, {
+            method: 'POST',
+        })
         .then(response => {
           if (response.status === 204) {
+            // Löschen der Aufgabe im Frontend
             const todoElement = document.querySelector(`li[data-id="${todoId}"]`);
             todoElement.style.textDecoration = 'line-through';
             todoElement.classList.add('fade-out');
@@ -44,11 +52,11 @@ todoListContainer.addEventListener('click', async (event) => {
     // Aufgabe wurde geklickt
     const todoId = target.dataset.id;
 
-    // Hier rufen wir die asynchrone Funktion direkt auf
+    // Direktes Aufrugen der asynchronen Funktion
     (async () => {
       const data = await fetchTodoDetails(todoId);
       if (!data) {
-        // Wenn das Abrufen der Aufgabendetails fehlschlägt, breche die Verarbeitung hier ab
+        // Wenn das Abrufen der Aufgabendetails fehlschlägt, die Verarbeitung hier abbrechen
         return;
       }
 
@@ -58,7 +66,7 @@ todoListContainer.addEventListener('click', async (event) => {
       const actualDeadline = deadline ? parseDatetime(deadline.date) : '';
       todoName.value = name;
       todoName.dataset.indexNumber = todoId;
-      parendItemId.dataset.indexNumber = todoId; // ToDo Id für SubToDo adding
+      parendItemId.dataset.indexNumber = todoId; // Id der Aufgabe für die Unteraufgabe (Zuordnung in Frontend)
       todoDescription.value = actualDescription;
       todoPriority.selectedIndex = actualPrio - 1;
       todoDeadline.value = actualDeadline;
@@ -74,12 +82,24 @@ todoListContainer.addEventListener('click', async (event) => {
 const closeButton = document.getElementById('close-popup');
 const saveButton = document.getElementById('save-button');
 
+/**
+ * Event-Listener für das Schließen des Pop-up-Fensters.
+ *
+ * Dieser Event-Listener reagiert auf das Klicken des "Schließen"-Buttons und versteckt das Pop-up-Fenster.
+ * @param {Event} event Das Klickereignis, das ausgelöst wurde.
+ */
 closeButton.addEventListener('click', () => {
     popup.style.display = 'none';
 });
 
+/**
+ * Event-Listener für das Speichern von Aufgabenänderungen und das Schließen des Pop-up-Fensters.
+ *
+ * Dieser Event-Listener reagiert auf das Klicken des "Speichern"-Buttons im Pop-up-Fenster. Er sendet die geänderten
+ * Aufgabeninformationen an den Server, aktualisiert die Seite und schließt das Pop-up-Fenster.
+ */
 saveButton.addEventListener('click', async () => {
-    // Hier kannst du die Änderungen speichern und das Popup schließen
+    // Änderungen speichern
     const todoId = document.getElementById('todo-item-name-input').dataset.indexNumber;
     const updateName = document.getElementById('todo-item-name-input').value;
     const updateDescription = document.getElementById('todo-item-description-input').value;
@@ -94,6 +114,7 @@ saveButton.addEventListener('click', async () => {
         });
 
         if (response.status === 200) {
+            // Popup schließen, Seite neuladen
             location.reload();
             setTimeout(() => {
                 popup.style.display = 'none';
@@ -106,7 +127,14 @@ saveButton.addEventListener('click', async () => {
     }
 });
 
-
+/**
+ * Ruft Details einer Aufgabe von der API ab.
+ *
+ * Diese Funktion sendet eine GET-Anfrage an die API, um Details einer Aufgabe mit der angegebenen Aufgaben-ID abzurufen.
+ *
+ * @param {number} todoId Die ID der Aufgabe, deren Details abgerufen werden sollen.
+ * @returns {Promise<Object|null>} Ein Promise, das die abgerufenen Aufgabendetails oder null zurückgibt, falls ein Fehler auftritt.
+ */
 async function fetchTodoDetails(todoId) {
     try {
         const response = await fetch(`/api/todos/${todoId}`, {
@@ -126,7 +154,18 @@ async function fetchTodoDetails(todoId) {
     }
 }
 
-// Prioritäts-Mapping-Funktion
+/**
+ * Ordnet eine Prioritätszahl einer vordefinierten Prioritätsstufe zu.
+ *
+ * Diese Funktion nimmt eine Prioritätszahl als Eingabe und ordnet sie einer der folgenden vordefinierten Prioritätsstufen zu:
+ * - 1: Hoch
+ * - 2: Mittel
+ * - 3: Niedrig
+ * - 4: Standard (falls keine Übereinstimmung gefunden wird)
+ *
+ * @param {number} priority Die Prioritätszahl, die gemappt werden soll.
+ * @returns {number} Die zugeordnete Prioritätsstufe.
+ */
 function mapPriority(priority) {
     switch (priority) {
         case null:
@@ -142,7 +181,6 @@ function mapPriority(priority) {
     }
 }
 export { mapPriority };
-
 
 /**
  * Parst einen Datumszeit-String in das gewünschte Format "yyyy-MM-ddThh:mm".
@@ -166,19 +204,23 @@ function parseDatetime(datetimeString) {
 export { parseDatetime };
 
 
-// Verwende diese globalen Variablen für die Sortierung
+// Globale Variablen für die Sortierung
 let sortType = 'name'; // Standard-Sortiertyp
-let sortOrder = 'asc'; // Standard-Sortierreihenfolge
+let sortOrder = 'desc'; // Standard-Sortierreihenfolge
 
-// Finde die Sortierbuttons und füge Event-Listener hinzu
 const sortButtons = document.querySelectorAll('button[data-sort]');
 
+/**
+ * Event-Listener für das Sortieren der Aufgabenliste.
+ *
+ * Dieser Event-Listener wird auf die Klick-Ereignisse der Sortierbuttons angewendet. Er ändert die Sortierreihenfolge
+ * und aktualisiert die Aufgabenliste entsprechend.
+ * @param {Event} event Das Klickereignis, das ausgelöst wurde.
+ */
 sortButtons.forEach((button) => {
   button.addEventListener('click', async () => {
     sortType = button.dataset.sort;
     sortOrder = button.dataset.order === 'asc' ? 'desc' : 'asc';
-    console.log(button.dataset.order);
-    console.log(sortOrder);
 
     // Ändere das Text-Label des Buttons basierend auf der Sortierreihenfolge
     button.getElementsByTagName("div")[0].innerText = `${sortOrder === 'asc' ? '↑' : '↓'}`;
@@ -207,7 +249,16 @@ sortButtons.forEach((button) => {
   });
 });
 
-// Sortierfunktion für die Aufgabenliste
+/**
+ * Sortierfunktion für die Aufgabenliste.
+ *
+ * Diese Funktion ruft die Aufgabenliste vom Server ab und sortiert sie basierend auf dem ausgewählten Sortiertyp
+ * und der Sortierreihenfolge (auf- oder absteigend).
+ *
+ * @param {string} sortType - Der Typ, nach dem die Aufgaben sortiert werden sollen (z. B. "prio" oder "deadline").
+ * @param {string} sortOrder - Die Sortierreihenfolge ("asc" für aufsteigend oder "desc" für absteigend).
+ * @returns {Array} - Das sortierte Aufgabenarray.
+ */
 async function sortTodoList(sortType, sortOrder) {
     try {
         const response = await fetch('/api/todos', {

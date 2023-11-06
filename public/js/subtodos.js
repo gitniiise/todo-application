@@ -4,66 +4,77 @@ import { parseDatetime } from './todos.js';
 const addSubtodoForm = document.getElementById('add-subtodo-form');
 const subtodoNameInput = document.getElementById('new_subtodo');
 
+/**
+ * Verarbeitet das Absenden des Unteraufgaben-Formulars und fügt eine neue Unteraufgabe hinzu.
+ *
+ * Wird aufgerufen, wenn das Unteraufgaben-Formular abgesendet wird. Sie verhindert das Standardverhalten des Formulars,
+ * holt die ID der übergeordneten Aufgabe und den Namen der Unteraufgabe, fügt die Unteraufgabe hinzu und aktualisiert die Ansicht.
+ * Bei Fehlern wird eine Fehlermeldung in der Konsole angezeigt.
+ *
+ * @param {Event} event Das Ereignisobjekt, das das Formular-Absenden ausgelöst hat.
+ */
 addSubtodoForm.addEventListener('submit', async (event) => {
-event.preventDefault(); // Verhindere das Standardverhalten des Formulars (Seitenneuladen)
-const parentTodoId = document.getElementById('todo-item-name-input').dataset.indexNumber; // Holen Sie die ID der übergeordneten Aufgabe
-const newSubtodoName = subtodoNameInput.value; // Holen Sie den Namen der Unteraufgabe
-// Hier fügst du die Unteraufgabe hinzu (Kommunikation mit dem Backend)
-const data = {
-    "new_subtodo": newSubtodoName,
-    "parentId": parentTodoId
-};
-try {
-    const response = await fetch('/add_subtodo', {
-        method: 'POST',
-        body: JSON.stringify({ "new-subtodo-name": newSubtodoName, "parentId": parentTodoId }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
-    if (response.status === 200) {
-        const result = await response.json();
-        const subtodoId = result.subtodoId;
-        createSubtodoAsListElement(newSubtodoName, subtodoId)
+    event.preventDefault(); // Verhindere das Standardverhalten des Formulars (Seitenneuladen)
+    const parentTodoId = document.getElementById('todo-item-name-input').dataset.indexNumber; // Holen die ID der übergeordneten Aufgabe
+    const newSubtodoName = subtodoNameInput.value; // Holen den Namen der Unteraufgabe
+    // Unteraufgabe hinzufügen
+    const data = {
+        "new_subtodo": newSubtodoName,
+        "parentId": parentTodoId
+    };
+    try {
+        const response = await fetch('/add_subtodo', {
+            method: 'POST',
+            body: JSON.stringify({ "new-subtodo-name": newSubtodoName, "parentId": parentTodoId }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (response.status === 200) {
+            const result = await response.json();
+            const subtodoId = result.subtodoId;
 
-        const subtodoMessage = document.getElementById('no-subtodos-message');
-        if(subtodoMessage){
-            subtodoMessage.innerText = '';
+            createSubtodoAsListElement(newSubtodoName, subtodoId)
+
+            const subtodoMessage = document.getElementById('no-subtodos-message');
+            if(subtodoMessage){
+                subtodoMessage.innerText = '';
+            }
+        } else {
+        console.error('Fehler beim Hinzufügen der Unteraufgabe', response.status);
         }
-    } else {
-    console.error('Fehler beim Hinzufügen der Unteraufgabe', response.status);
+    } catch (error) {
+        console.error('Fehler beim Senden der Anfrage', error.message);
     }
-  } catch (error) {
-    console.error('Fehler beim Senden der Anfrage', error.message);
-  }
-  // Zurücksetzen des Formulars
-  subtodoNameInput.value = '';
+    // Zurücksetzen des Formulars
+    subtodoNameInput.value = '';
 });
 
 
-
-// Diese Funktion zeigt die Unteraufgaben für die übergeordnete Aufgabe mit der gegebenen todoId an.
+/**
+ * Diese Funktion ruft die Unteraufgaben für die übergeordnete Aufgabe mit der angegebenen todoId ab und zeigt sie in der Benutzeroberfläche an.
+ *
+ * @param {number} todoId Die ID der übergeordneten Aufgabe, für die die Unteraufgaben angezeigt werden sollen.
+ */
 async function showSubToDos(todoId) {
-  // Füge hier den Code ein, um die Unteraufgaben für die gegebene todoId abzurufen und anzuzeigen.
 
   try {
-    // Hier rufst du die API auf, um die Unteraufgaben für die übergeordnete Aufgabe zu erhalten.
+    // Unteraufgaben für die übergeordnete Aufgabe abrufen
     const response = await fetch(`/api/subtodos/${todoId}`, {
       method: 'GET',
     });
     if (response.status === 200) {
         const subtodos = await response.json();
         
-        // Hier kannst du den HTML-Code erstellen, um die Unteraufgaben anzuzeigen.
+        // Unteraufgaben anzuzeigen
         const subtodoList = document.getElementById('subtodo-list');
-        subtodoList.innerHTML = ''; // Leere die vorherigen Unteraufgaben
-        console.log(subtodos);
+        subtodoList.innerHTML = ''; // Leeren der vorherigen Unteraufgaben
         if (subtodos.length > 0) {
             subtodos.forEach(subtodo => {
                 createSubtodoAsListElement(subtodo.name, subtodo.id, subtodo.prio, subtodo.deadline);
         });
         } else {
-        // Zeige eine Meldung an, wenn keine Unteraufgaben vorhanden sind.
+            // Zeige eine Meldung an, wenn keine Unteraufgaben vorhanden sind.
             const noSubtodosMessage = document.createElement('p');
             noSubtodosMessage.id = 'no-subtodos-message';
             noSubtodosMessage.textContent = 'Keine Unteraufgaben vorhanden.';
@@ -76,10 +87,18 @@ async function showSubToDos(todoId) {
     console.error('Fehler beim Senden der Anfrage', error.message);
   }
 }
-
-// Exportiere die showSubToDos-Funktion, damit sie in todos.js verwendet werden kann
+// Exportieren der showSubToDos-Funktion, damit sie in todos.js verwendet werden kann
 export { showSubToDos };
 
+/**
+ * Diese Funktion erstellt ein Listenelement für eine Unteraufgabe mit dem gegebenen Namen, ID, Priorität und Fälligkeitsdatum
+ * und fügt es der Liste der Unteraufgaben in der Benutzeroberfläche hinzu.
+ *
+ * @param {string} subtodoName Der Name der Unteraufgabe.
+ * @param {number} subtodoId Die ID der Unteraufgabe.
+ * @param {number} subtodoPrio Die Priorität der Unteraufgabe (falls vorhanden).
+ * @param {string} subtodoDeadline Das Fälligkeitsdatum der Unteraufgabe im ISO-Format (falls vorhanden).
+ */
 function createSubtodoAsListElement(subtodoName, subtodoId, subtodoPrio, subtodoDeadline){
     const subtodoItem = document.createElement('li');
     subtodoItem.className = 'subtodo-item';
@@ -101,7 +120,7 @@ function createSubtodoAsListElement(subtodoName, subtodoId, subtodoPrio, subtodo
         const dateString = subtodoDeadline.date;
         const date = new Date(dateString);
         
-        // Formatieren Sie das Datum mit dem gewünschten Format
+        // Formatieren vom Datum mit dem gewünschten Format
         const formattedDate = new Intl.DateTimeFormat('de-DE', {
             year: 'numeric',
             month: '2-digit',
@@ -109,7 +128,6 @@ function createSubtodoAsListElement(subtodoName, subtodoId, subtodoPrio, subtodo
             hour: '2-digit',
             minute: '2-digit',
         }).format(date);
-        console.log(formattedDate);
         const deadlineVisual = document.createElement('span');
         deadlineVisual.className = 'deadline-info';
         deadlineVisual.innerHTML = formattedDate;
@@ -122,11 +140,20 @@ function createSubtodoAsListElement(subtodoName, subtodoId, subtodoPrio, subtodo
 }
 
 const subtodoList = document.getElementById('subtodo-list');
+
+/**
+ * Verarbeitung der Klickereignisse innerhalb der Unteraufgabenliste.
+ *
+ * Dieser EventListener reagiert auf Klickereignisse innerhalb der Unteraufgabenliste, einschließlich Klicks auf den "Speichern"-Button,
+ * Klicks auf Checkboxen und das Anzeigen von Bearbeitungselementen für Unteraufgaben. Sie führt entsprechende Aktionen aus,
+ * wie das Entfernen von Bearbeitungselementen, Löschen von Unteraufgaben und das Erstellen von Bearbeitungselementen.
+ *
+ * @param {Event} event Das Klickereignis, das ausgelöst wurde.
+ */
 subtodoList.addEventListener('click', async (event) => {
     const target = event.target;
     const clickedLi = target.closest('li.subtodo-item');
     if (target.id === 'save-button') {
-        console.log("target save");
 
         // Der "Speichern"-Button wurde geklickt, entferne das Bearbeitungselement
         const editForm = target.closest('form#update-form-subtodo');
@@ -134,12 +161,9 @@ subtodoList.addEventListener('click', async (event) => {
             editForm.remove();
         }
     } else if (target.classList.contains('subtodo-checkbox')) {
-        console.log("target checkbox");
 
-        // Checkbox wurde geklickt => delete subtodo
+        // Checkbox wurde geklickt => lösche Unteraufgabe
         if (target.checked) {
-            console.log("target checkbox true");
-
             const subtodoId = target.parentElement.dataset.id;
 
             fetch(`/api/subtodos/${subtodoId}`, {
@@ -157,7 +181,7 @@ subtodoList.addEventListener('click', async (event) => {
                     subtodoElement.classList.add('fade-out');
                     setTimeout(() => {
                         subtodoElement.style.display = 'none';
-                    }, 1000); // Ausblenden verzögert
+                    }, 1000);
                 } else {
                     console.error('Fehler beim Löschen der Unteraufgabe', response.status);
                 }
@@ -167,15 +191,12 @@ subtodoList.addEventListener('click', async (event) => {
             });
         }
     } else if (clickedLi) {
-        console.log("target editform");
         // Erstelle ein neues aufklappbares Bearbeitungselement
         const subtodoId = clickedLi.getAttribute('data-id');
         // Überprüfe, ob ein anderes Bearbeitungselement geöffnet ist
         const existingEditForm = subtodoList.querySelector('form#update-form-subtodo');
-        
         if (existingEditForm) {
-        // Entferne das vorhandene Bearbeitungselement
-        existingEditForm.remove();
+            existingEditForm.remove();
         }
         const editForm = await createEditForm(subtodoId, clickedLi);
         
@@ -184,22 +205,26 @@ subtodoList.addEventListener('click', async (event) => {
     }
 });
 
+/**
+ * Diese Funktion erstellt ein Bearbeitungsformular für eine Unteraufgabe mit den angegebenen Details und fügt es der Benutzeroberfläche hinzu.
+ *
+ * @param {number} subtodoId Die ID der Unteraufgabe, für die das Bearbeitungsformular erstellt wird.
+ * @param {HTMLElement} clickedLi Das geklickte Listenelement der Unteraufgabe, um das Bearbeitungsformular nach diesem Element hinzuzufügen.
+ * @returns {HTMLElement} Das erstellte Bearbeitungsformular-Element.
+ */
 async function createEditForm(subtodoId, clickedLi) {
     const editForm = document.createElement('form');
     editForm.id = 'update-form-subtodo';
     editForm.dataset.indexNumber = subtodoId;
-    console.log('form');
     editForm.classList = 'green-bg';
+
     const data = await fetchSubTodoDetails(subtodoId);
     const { name, description, prio, deadline } = data;
-    //TODO: make dynamik for both entitys
+    //TODO: Dynamisch für beide Enitäten
     const actualDescription = description || 'Beschreibung der Unteraufgabe hinzufügen';
     const actualPrio = mapPriority(prio);
-    console.log(actualPrio);
     const actualDeadline = deadline ? parseDatetime(deadline.date) : '';
 
-    console.log(data);
-    //TODO geht subtodo date and fill in form
     editForm.innerHTML = `
         <div class="form-group">
         <input type="text" id="subtodo-item-name-input" name="name" placeholder="${name}" data-index-number="${subtodoId}" value="${name}">
@@ -230,11 +255,20 @@ async function createEditForm(subtodoId, clickedLi) {
         <button id="save-button-subtodo">Speichern</button>
     `;
     clickedLi.insertAdjacentElement('afterend', editForm);
+    // Aktuelle Daten in den Inputs hinterlegen
     document.getElementById('subtodo-item-priority-input').selectedIndex = actualPrio - 1;
     document.getElementById('subtodo-item-deadline-input').value = actualDeadline;
   return editForm;
 }
 
+/**
+ * Ruft Details einer Unteraufgabe von der API ab.
+ *
+ * Diese Funktion sendet eine GET-Anfrage an die API, um Details einer Unteraufgabe mit der angegebenen Unteraufgaben-ID abzurufen.
+ *
+ * @param {number} subtodoId Die ID der Unteraufgabe, deren Details abgerufen werden sollen.
+ * @returns {Promise<Object|null>} Ein Promise, das die abgerufenen Unteraufgabendetails oder null zurückgibt, falls ein Fehler auftritt.
+ */
 async function fetchSubTodoDetails(subtodoId) {
     try {
         const response = await fetch(`/api/subtodo/${subtodoId}`, {
@@ -255,16 +289,24 @@ async function fetchSubTodoDetails(subtodoId) {
     }
 }
 
+/**
+ * Generiert einen Event-Listener für das Speichern von Unteraufgaben.
+ *
+ * Diese Funktion erstellt einen Event-Listener für den "Speichern"-Button einer Unteraufgabe. Sie reagiert auf Klickereignisse
+ * auf den "Speichern"-Button, um die Änderungen an einer Unteraufgabe zu speichern und an den Server zu senden.
+ */
 async function generateEventListenerSaveSubTodo() {
     const saveButtonSubtodo = document.getElementById('save-button-subtodo');
     saveButtonSubtodo.addEventListener('click', async () => {
-        //TODO: Dynamisch machen mit Methode in todo entity
+        //TODO: Dynamisch machen mit Methode für beide Entitäten
         const subtodoId = document.getElementById('subtodo-item-name-input').dataset.indexNumber;
         const updateName = document.getElementById('subtodo-item-name-input').value;
         const updateDescription = document.getElementById('subtodo-item-description-input').value;
         const updatePrio = mapPriority(parseInt(document.getElementById('subtodo-item-priority-input').value));
         const updateDeadline = document.getElementById('subtodo-item-deadline-input').value;
-
+        if (updateDeadline === '') {
+            updateDeadline = null;
+        }
         const subtodoObjectUpdate = JSON.stringify({ updateName, updateDescription, updatePrio, updateDeadline });
         try {
             const response = await fetch(`/api/subtodos/${subtodoId}`, {
