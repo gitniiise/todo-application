@@ -303,14 +303,14 @@ async function generateEventListenerSaveSubTodo() {
         const updateName = document.getElementById('subtodo-item-name-input').value;
         const updateDescription = document.getElementById('subtodo-item-description-input').value;
         const updatePrio = mapPriority(parseInt(document.getElementById('subtodo-item-priority-input').value));
-        const updateDeadline = document.getElementById('subtodo-item-deadline-input').value;
+        let updateDeadline = document.getElementById('subtodo-item-deadline-input').value;
         if (updateDeadline === '') {
             updateDeadline = null;
         }
         const subtodoObjectUpdate = JSON.stringify({ updateName, updateDescription, updatePrio, updateDeadline });
         try {
             const response = await fetch(`/api/subtodos/${subtodoId}`, {
-                method: 'PUT',
+                method: 'POST',
                 body: subtodoObjectUpdate,
             });
         } catch (error) {
