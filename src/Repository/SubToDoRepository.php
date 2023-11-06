@@ -20,19 +20,4 @@ class SubToDoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SubToDo::class);
     }
-
-//    /**
-//     * @return SubToDo[] Returns an array of SubToDo objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 }

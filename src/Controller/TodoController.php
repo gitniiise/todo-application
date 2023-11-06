@@ -18,29 +18,41 @@ class TodoController extends AbstractController
 {
     private $entityManager;
 
+    /**
+     * Konstruktor der Klasse TodoController.
+     *
+     * @param EntityManagerInterface $entityManager Der Entity Manager, der für Datenbankoperationen verwendet wird.
+     */
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/', name: 'index')]
+    /**
+     * @Route('/', name="index")
+     * 
+     * Zeigt die Liste aller Aufgaben an.
+     * Achtung: Zeigt nicht die Unteraufgaben.
+     * 
+     * Diese Methode ruft alle Aufgaben aus der Datenbank ab und rendert eine Ansicht, die die Liste dieser Aufgaben darstellt.
+     * 
+     * @param TodoRepository $toDoRepository Ein Repository für die Aufgaben.
+     * @return Response Eine Symfony Response, die die Liste der Aufgaben enthält.
+     */
     public function todos(TodoRepository $toDoRepository): Response
     {
-        // Aufgaben aus der Datenbank abrufen
         $todos = $toDoRepository->findAll();
         return $this->render('index.html.twig', ['todos' => $todos]);
     }
 
     /**
-     * @Route("/add_todo", name="add_todo", methods: ['POST'])
+     * @Route("/add_todo", name="add_todo", methods: {'POST'})
      * 
      * Diese Methode ermöglicht das Hinzufügen neuer Aufgaben zur Todo-Liste.
      * 
      * @param Request $request Das Symfony Request-Objekt, das die Benutzereingabe enthält.
-     * 
      * @return Response Eine Symfony Response, die den Benutzer nach dem Hinzufügen zur Todo-Liste zurückleitet.
      */
-    #[Route('/add_todo', name: 'add_todo')]
     public function addTodo(Request $request): Response
     {
         $newToDo = $request->request->get('new_todo');
@@ -57,7 +69,16 @@ class TodoController extends AbstractController
         return $this->redirectToRoute('index');
     }
 
-    #[Route('/api/todos', name: 'api_todo_list', methods: ['GET'])]
+    /**
+     * @Route('/api/todos', name="api_todo_list", methods={"GET"})
+     * 
+     * Holt eine Liste aller Aufgaben als JSON. Achtung: Nicht die Unteraufgaben.
+     * 
+     * Diese Methode ruft alle Aufgaben aus der Datenbank ab und konvertiert sie in ein JSON-Format, das als Antwort zurückgegeben wird.
+     * 
+     * @param TodoRepository $toDoRepository Ein Repository für die Aufgaben.
+     * @return JsonResponse Eine Symfony JsonResponse, die die Liste der Aufgaben im JSON-Format enthält.
+     */
     public function getTodos(TodoRepository $toDoRepository): JsonResponse
     {
         $toDoList = $toDoRepository->findAll();
@@ -72,7 +93,6 @@ class TodoController extends AbstractController
                 'deadline' => $toDo->getDeadline() ? $toDo->getDeadline()->format('Y-m-d H:i:s') : null,
             ];
         }
-
         return $this->json($toDoArray);
     }
     

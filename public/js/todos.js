@@ -117,7 +117,6 @@ async function fetchTodoDetails(todoId) {
             const data = await response.json();
             return data;
         } else {
-            // Behandlung von Fehlern, wenn die Anfrage an den Server fehlschlägt
             console.error('Fehler beim Abrufen der Aufgabendetails', response.status);
             return null;
         }
@@ -196,6 +195,7 @@ sortButtons.forEach((button) => {
         const formattedDeadline = new Intl.DateTimeFormat('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(todo.deadline));
 
         // Fügen Sie hier den Aufgabeninhalt ein, ähnlich wie in Ihrem ursprünglichen Template
+        //TODO: Dynamisch für alle Entitäten machen
         todoItem.innerHTML = `
         <input type="checkbox" class="todo-checkbox">
         ${todo.prio === 1 ? '<span class="prio-icon"><svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="31.000000pt" height="289.000000pt" viewBox="0 0 11.000000 289.000000" preserveAspectRatio="xMidYMid meet" style="width: 10px;"><g transform="translate(0.000000,289.000000) scale(0.100000,-0.100000)" fill="red" stroke="none"><path d="M305 2775 c-52 -18 -102 -73 -111 -121 -4 -21 5 -398 21 -838 29 -870 26 -839 88 -876 41 -25 73 -25 114 0 62 37 59 6 88 876 15 441 25 818 21 837 -18 94 -129 156 -221 122z"></path><path d="M264 521 c-57 -26 -111 -92 -125 -156 -25 -110 45 -228 154 -260 63 -19 71 -19 134 0 100 30 176 147 158 243 -28 150 -185 235 -321 173z"></path></g></svg></span>' : ''}

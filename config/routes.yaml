@@ -18,9 +18,13 @@ update_todo:
     path: /api/todos/{id}
     controller: App\Controller\TodoController::updateTodo
     methods: PUT
+get_subtodo:
+    path: /api/subtodo/{id}
+    controller: App\Controller\SubToDoController::getSubToDo
+    methods: GET
 get_subtodos:
     path: /api/subtodos/{parentTodoId}
-    controller: App\Controller\SubToDoController::getsubtodos
+    controller: App\Controller\SubToDoController::getSubToDos
     methods: GET
 update_subtodo:
     path: /api/subtodos/{id}
